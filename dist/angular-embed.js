@@ -22,81 +22,88 @@
 
 })();
 
-'use strict';
+(function() {
+    'use strict';
 
-function embedService(embedlyService, noEmbedService, $q) {
-    var noEmbedProviders = noEmbedService.providers();
-
-    function isSupportedByNoEmbedProviders(providers, url) {
-        // test the url with all the providers. Return true if the url match a provider
-        return providers.some(function(provider) {
-            return provider.patterns.some(function(pattern) {
-                var regex = new RegExp(pattern);
-                return regex.test(url);
-            });
-        });
+    function EmbedServiceProvider() {
+        // Embed Service
+        function embedService(embedlyService, noEmbedService, $q) {
+            var noEmbedProviders = noEmbedService.providers();
+            // test the url with all the providers. Return true if the url match a provider
+            function isSupportedByNoEmbedProviders(providers, url) {
+                return providers.some(function(provider) {
+                    return provider.patterns.some(function(pattern) {
+                        var regex = new RegExp(pattern);
+                        return regex.test(url);
+                    });
+                });
+            }
+            return {
+                get: function(url) {
+                    // prepare a promise to be returned quickly
+                    var deferred = $q.defer();
+                    // return the embedly response to the promise
+                    function useEmbedlyService() {
+                        embedlyService.embed(url).then(function(response) {
+                            deferred.resolve(response.data);
+                        });
+                    }
+                    // return the noEmbed response to the promise
+                    function useNoEmbedService() {
+                        deferred.resolve(noEmbedService.embed(url));
+                    }
+                    // wait for the providers list
+                    noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
+                        // if the url is in the NoEmbed providers list, we use NoEmbed
+                        if (isSupportedByNoEmbedProviders(providers, url)) {
+                            useNoEmbedService();
+                        } else {
+                            // otherwise we use embedly which limits requests
+                            useEmbedlyService();
+                        }
+                    }, function noEmbedProvidersErrorCallback(error) {
+                        // on NoembedProviders error, use the embedly service
+                        useEmbedlyService();
+                    });
+                    // return the promise
+                    return deferred.promise;
+                }
+            };
+        }
+        // register the service in the provider and inject dependencies
+        this.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
     }
 
-    return {
-        get: function(url) {
-            // prepare a promise to be returned quickly
-            var deferred = $q.defer();
-            // return the embedly response to the promise
-            function useEmbedlyService() {
-                embedlyService.embed(url).then(function(response) {
-                    deferred.resolve(response.data);
-                });
+    angular.module('angular-embed.services')
+        .provider('embedService', EmbedServiceProvider);
+})();
+
+(function () {
+    'use strict';
+
+    function noEmbedService($resource) {
+        return {
+            embed: function(url) {
+                var resource = $resource('https://noembed.com/embed?callback=JSON_CALLBACK&url='+url, {},
+                    {
+                        get: {
+                            method: 'JSONP'
+                        }
+                    });
+                return resource.get().$promise;
+            },
+            providers: function() {
+                var resource = $resource('https://noembed.com/providers', {},
+                    {
+                        query: {
+                            method: 'JSONP',
+                            isArray: true,
+                            params: {callback:'JSON_CALLBACK'}
+                        }
+                    });
+                return resource.query().$promise;
             }
-            // return the noEmbed response to the promise
-            function useNoEmbedService() {
-                deferred.resolve(noEmbedService.embed(url));
-            }
-            // wait the providers list
-            noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
-                // if the url is in the NoEmbed providers list, we use NoEmbed
-                if (isSupportedByNoEmbedProviders(providers, url)) {
-                    useNoEmbedService();
-                } else {
-                    // otherwise we use embedly which limits requests
-                    useEmbedlyService();
-                }
-            }, function noEmbedProvidersErrorCallback(error) {
-                // on NoembedProviders error, use the embedly service
-                useEmbedlyService();
-            });
-            // return the promise
-            return deferred.promise;
-        }
-    };
-}
-
-angular.module('angular-embed.services').service('embedService', ['embedlyService', 'noEmbedService', '$q', embedService]);
-
-'use strict';
-
-function noEmbedService($resource) {
-    return {
-        embed: function(url) {
-            var resource = $resource('https://noembed.com/embed?callback=JSON_CALLBACK&url='+url, {},
-                {
-                    get: {
-                        method: 'JSONP'
-                    }
-                });
-            return resource.get().$promise;
-        },
-        providers: function() {
-            var resource = $resource('https://noembed.com/providers', {},
-                {
-                    query: {
-                        method: 'JSONP',
-                        isArray: true,
-                        params: {callback:'JSON_CALLBACK'}
-                    }
-                });
-            return resource.query().$promise;
-        }
-    };
-}
-
-angular.module('noEmbed').service('noEmbedService', ['$resource', noEmbedService]);
+        };
+    }
+    angular.module('noEmbed').service('noEmbedService', ['$resource', noEmbedService]);
+})();
