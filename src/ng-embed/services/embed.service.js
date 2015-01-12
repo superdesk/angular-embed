@@ -7,9 +7,7 @@ function embedService(embedlyService, noEmbedService, $q) {
         return providers.some(function(provider) {
             return provider.patterns.some(function(pattern) {
                 var regex = new RegExp(pattern);
-                if (regex.test(url)) {
-                    return true;
-                }
+                return regex.test(url);
             });
         });
     }
@@ -21,7 +19,9 @@ function embedService(embedlyService, noEmbedService, $q) {
                 if (isSupportedByNoEmbedProviders(providers, url)) {
                     deferred.resolve(noEmbedService.embed(url));
                 } else {
-                    deferred.resolve(embedlyService.embed(url));
+                    embedlyService.embed(url).then(function(response) {
+                        deferred.resolve(response.data);
+                    });
                 }
             });
             return deferred.promise;
