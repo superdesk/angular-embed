@@ -29,4 +29,4 @@ function embedService(embedlyService, noEmbedService, $q) {
     };
 }
 
-angular.module('ngEmbed.services').service('embed', ['embedlyService', 'noEmbedService', '$q', embedService]);
+angular.module('ngEmbed.services').service('embedService', ['embedlyService', 'noEmbedService', '$q', embedService]);

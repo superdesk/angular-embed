@@ -15,9 +15,9 @@ describe('ngEmbed', function() {
 
     beforeEach(module('ngEmbed.services'));
 
-    beforeEach(inject(function(embed, _$httpBackend_) {
+    beforeEach(inject(function(_embedService_, _$httpBackend_) {
         httpBackend = _$httpBackend_;
-        embedService = embed;
+        embedService = _embedService_;
         httpBackend.when('GET', 'http://noembed.com/providers').respond(providers);
         httpBackend.when('GET', 'http://noembed.com/embed?url='+youtube_url).respond(youtube_response);
         httpBackend.when('GET', 'https://api.embed.ly/1/oembed?key=undefined&url='+randomsite_url).respond(randomsite_response);
