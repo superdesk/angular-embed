@@ -19,16 +19,16 @@ _Embed.ly_ limits the amount of requests and requires an API key so __you need t
 <script src="bower/angular-embed/dist/angular-embed.min.js"></script>
 ```
 
-- Set `angular-embed` as a dependency of your module
-
 ```js
-    var myApp = angular.module('myApp', ['angular-embed']);
-```
-
-- Set your embed.ly key
-
-```js
-    myApp.config(function(embedlyServiceProvider){
+    angular.module('myApp', [
+        // set `angular-embed` as a dependency of your module
+        'angular-embed'
+    // inject the service
+    ]).controller('Ctrl', ['embedService', function(embedService) {
+        // retrieve page information
+        embedService.get('https://www.youtube.com/watch?v=Ksd-a9lIIDc')
+    }]).config(function(embedlyServiceProvider) {
+        // set your embed.ly key
         embedlyServiceProvider.setKey('your key');
     });
 ```
