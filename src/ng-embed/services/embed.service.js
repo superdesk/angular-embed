@@ -4,16 +4,14 @@ function embedService(embedlyService, noEmbedService, $q) {
     var noEmbedProviders = noEmbedService.providers();
 
     function isSupportedByNoEmbedProviders(providers, url) {
-        for (var i = 0; i < providers.length; i++) {
-            var provider = providers[i];
-            for (var j = 0; j < provider.patterns.length; j++) {
-                var regex = new RegExp(provider.patterns[j]);
+        return providers.some(function(provider) {
+            return provider.patterns.some(function(pattern) {
+                var regex = new RegExp(pattern);
                 if (regex.test(url)) {
                     return true;
                 }
-            }
-        }
-        return false;
+            });
+        });
     }
 
     return {
