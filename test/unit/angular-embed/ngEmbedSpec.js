@@ -13,16 +13,16 @@ describe('', function() {
     beforeEach(function() {
 
         // Get module
-        module = angular.module('ngEmbed');
+        module = angular.module('angular-embed');
         dependencies = module.requires;
     });
 
     it('should load config module', function() {
-        expect(hasModule('ngEmbed.config')).to.be.ok;
+        expect(hasModule('angular-embed.config')).to.be.ok;
     });
 
     it('should load services module', function() {
-        expect(hasModule('ngEmbed.services')).to.be.ok;
+        expect(hasModule('angular-embed.services')).to.be.ok;
     });
 
 });

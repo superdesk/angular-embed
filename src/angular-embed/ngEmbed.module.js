@@ -6,18 +6,18 @@
     // before all nested files are concatenated by Gulp
 
     // Config
-    angular.module('ngEmbed.config', [])
-        .value('ngEmbed.config', {
+    angular.module('angular-embed.config', [])
+        .value('angular-embed.config', {
             debug: true
         });
 
     // Modules
     angular.module('noEmbed', ['ngResource']);
-    angular.module('ngEmbed.services', ['angular-embedly', 'noEmbed']);
-    angular.module('ngEmbed',
+    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
+    angular.module('angular-embed',
         [
-            'ngEmbed.config',
-            'ngEmbed.services'
+            'angular-embed.config',
+            'angular-embed.services'
         ]);
 
 })();

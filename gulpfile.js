@@ -30,10 +30,10 @@ var sourceFiles = [
 gulp.task('build', function() {
   gulp.src(sourceFiles)
     .pipe(plumber())
-    .pipe(concat('ng-embed.js'))
+    .pipe(concat('angular-embed.js'))
     .pipe(gulp.dest('./dist/'))
     .pipe(uglify())
-    .pipe(rename('ng-embed.min.js'))
+    .pipe(rename('angular-embed.min.js'))
     .pipe(gulp.dest('./dist'))
 });
 

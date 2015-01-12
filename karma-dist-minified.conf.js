@@ -27,7 +27,8 @@ module.exports = function(config) {
       'bower/angular/angular.js',
       'bower/angular-resource/angular-resource.js',
       'bower/angular-mocks/angular-mocks.js',
-      'dist/ng-embed.min.js',
+      'bower/angular-embedly/em-minified/angular-embedly.min.js',
+      'dist/angular-embed.min.js',
       'test/unit/**/*.js'
     ],
 

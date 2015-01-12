@@ -1,5 +1,5 @@
 {
-  "name": "ng-embed",
+  "name": "angular-embed",
   "version": "0.1.0",
   "description" : "retrieve an embed code for the given url",
   "authors": [

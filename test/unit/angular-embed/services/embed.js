@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ngEmbed', function() {
+describe('angular-embed', function() {
 
     var dependencies;
     var httpBackend;
@@ -13,7 +13,7 @@ describe('ngEmbed', function() {
     var api_key = 'undefined';
     dependencies = [];
 
-    beforeEach(module('ngEmbed.services'));
+    beforeEach(module('angular-embed.services'));
 
     beforeEach(inject(function(_embedService_, _$httpBackend_) {
         httpBackend = _$httpBackend_;
