@@ -1,0 +1,32 @@
+{
+  "name": "ng-embed",
+  "version": "0.1.0",
+  "description" : "retrieve an embed code for the given url",
+  "authors": [
+    {
+      "name": "Edouard Richard",
+      "email": "edouard@sourcefabric.org"
+    }
+  ],
+  "main": [
+    "dist/ng-embed.js"
+  ],
+  "ignore": [
+    "src",
+    "test",
+    "Gruntfile.js",
+    "**/.*"
+  ],
+  "dependencies": {
+    "angular-embedly": "~0.0.6"
+  },
+  "devDependencies": {
+    "angular-mocks": ">=1.2.0",
+    "angular-scenario": ">=1.2.0",
+    "angular": ">=1.2.0",
+    "angular-resource": ">=1.2.0"
+  },
+  "resolutions": {
+    "angular": ">=1.2.0"
+  }
+}
