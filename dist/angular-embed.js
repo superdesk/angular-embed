@@ -60,10 +60,10 @@ angular.module('angular-embed.services').service('embedService', ['embedlyServic
 function noEmbedService($resource) {
     return {
         embed: function(url) {
-            return $resource('http://noembed.com/embed?url='+url).get().$promise;
+            return $resource('https://noembed.com/embed?url='+url).get().$promise;
         },
         providers: function() {
-            return $resource('http://noembed.com/providers').query().$promise;
+            return $resource('https://noembed.com/providers').query().$promise;
         }
     };
 }

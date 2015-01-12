@@ -13,7 +13,7 @@ describe('noEmbed', function() {
 
     beforeEach(inject(function(noEmbedService, _$httpBackend_) {
         httpBackend = _$httpBackend_;
-        httpBackend.when('GET', 'http://noembed.com/embed?url='+youtube_url).respond(youtube_response);
+        httpBackend.when('GET', 'https://noembed.com/embed?url='+youtube_url).respond(youtube_response);
         noEmbed = noEmbedService;
     }));
 
