@@ -1,7 +1,7 @@
 {
   "name": "angular-embed",
-  "version": "0.1.0",
-  "description" : "retrieve an embed code for the given url using NoEmbed or Embedly",
+  "version": "0.2",
+  "description" : "Retrieve an embed code for the given url using NoEmbed or Embedly",
   "authors": [
     {
       "name": "Edouard Richard",
@@ -9,7 +9,7 @@
     }
   ],
   "main": [
-    "dist/ng-embed.js"
+    "dist/angular-embed.js"
   ],
   "ignore": [
     "src",
@@ -17,6 +17,7 @@
     "Gruntfile.js",
     "**/.*"
   ],
+  "repository" : "https://github.com/superdesk/angular-embed",
   "dependencies": {
     "angular-embedly": "~0.0.6"
   },
