@@ -20,13 +20,24 @@
                     var deferred = $q.defer();
                     // return the embedly response to the promise
                     function useEmbedlyService() {
-                        embedlyService.embed(url).then(function(response) {
-                            deferred.resolve(response.data);
-                        });
+                        embedlyService.embed(url).then(
+                            function successCallback(response) {
+                                deferred.resolve(response.data);
+                            },
+                            function errorCallback(error) {
+                                deferred.reject(error.data.error_message);
+                            }
+                        );
                     }
                     // return the noEmbed response to the promise
                     function useNoEmbedService() {
-                        deferred.resolve(noEmbedService.embed(url));
+                        noEmbedService.embed(url).then(function(response) {
+                            if (response.error !== undefined) {
+                                deferred.reject(response.error);
+                            } else {
+                                deferred.resolve(response);
+                            }
+                        });
                     }
                     // wait for the providers list
                     noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
