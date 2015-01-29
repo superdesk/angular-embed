@@ -24,10 +24,10 @@
     // Modules
     angular.module('noEmbed', ['ngResource']);
     angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
+    angular.module('angular-embed-handlers', ['angular-embedly']);
     angular.module('angular-embed',
         [
             'angular-embed.config',
             'angular-embed.services'
         ]);
-
 })();

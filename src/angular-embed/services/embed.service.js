@@ -2,6 +2,7 @@
     'use strict';
 
     function EmbedServiceProvider() {
+        var provider = this;
         // Embed Service
         function embedService(embedlyService, noEmbedService, $q) {
             var noEmbedProviders = noEmbedService.providers();
@@ -15,6 +16,7 @@
                 });
             }
             return {
+                registerHandler: provider.registerHandler,
                 get: function(url) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
@@ -39,50 +41,38 @@
                             }
                         });
                     }
-                    function useTwitterHandler() {
-                        embedlyService.embed(url).then(
-                            function successCallback(response) {
-                                var data = response.data;
-                                if (data.provider_name === 'Twitter') {
-                                    data.html = [
-                                        '<blockquote class="twitter-tweet" data-partner="tweetdeck">',
-                                        '    <p>',
-                                        data.description,
-                                        '   </p>&mdash; ',
-                                        '   '+data.title+' (@'+data.author_name+')',
-                                        '   <a href="'+data.url+'">'+data.url+'</a>',
-                                        '</blockquote>'
-                                    ].join('\n');
+                    // if the url isn't supported by a specialHandler
+                    if (
+                        // loop over specialHandlers and stop when it find one in order to call it
+                        !provider.specialHandlers.some(function(handler) {
+                            return handler.patterns.some(function(pattern) {
+                                var regex = new RegExp(pattern);
+                                if (regex.test(url)) {
+                                    handler.embed(url).then(function(response) {
+                                        deferred.resolve(response);
+                                    });
+                                    return true;
+                                } else {
+                                    return false;
                                 }
-                                deferred.resolve(data);
-                            },
-                            function errorCallback(error) {
-                                deferred.reject(error.error_message || error.data.error_message);
+                            });
+                        })
+                    ) {
+                        // wait for the providers list
+                        noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
+                            // if the url is in the NoEmbed providers list, we use NoEmbed
+                            if (isSupportedByNoEmbedProviders(providers, url)) {
+                                useNoEmbedService();
                             }
-                        );
-                    }
-                    function validTweetUrl(url) {
-                        return (
-                            url.indexOf('twitter') !== -1 &&
-                            url.indexOf('status') !== -1);
-                    }
-                    // wait for the providers list
-                    noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
-                        if (validTweetUrl(url)) {
-                            useTwitterHandler();
-                        }
-                        // if the url is in the NoEmbed providers list, we use NoEmbed
-                        else if (isSupportedByNoEmbedProviders(providers, url)) {
-                            useNoEmbedService();
-                        }
-                        // otherwise we use embedly which limits requests
-                        else {
+                            // otherwise we use embedly which limits requests
+                            else {
+                                useEmbedlyService();
+                            }
+                        }, function noEmbedProvidersErrorCallback(error) {
+                            // on NoembedProviders error, use the embedly service
                             useEmbedlyService();
-                        }
-                    }, function noEmbedProvidersErrorCallback(error) {
-                        // on NoembedProviders error, use the embedly service
-                        useEmbedlyService();
-                    });
+                        });
+                    }
                     // return the promise
                     return deferred.promise;
                 }
@@ -90,6 +80,12 @@
         }
         // register the service in the provider and inject dependencies
         this.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
+        // list of specialHandler
+        this.specialHandlers = [];
+        // method to register specialHandlers
+        this.registerHandler = function(handler) {
+            provider.specialHandlers.push(handler);
+        };
     }
 
     angular.module('angular-embed.services')
