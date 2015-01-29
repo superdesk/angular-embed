@@ -25,7 +25,7 @@
                                 deferred.resolve(response.data);
                             },
                             function errorCallback(error) {
-                                deferred.reject(error.data.error_message);
+                                deferred.reject(error.error_message || error.data.error_message);
                             }
                         );
                     }
@@ -39,13 +39,44 @@
                             }
                         });
                     }
+                    function useTwitterHandler() {
+                        embedlyService.embed(url).then(
+                            function successCallback(response) {
+                                var data = response.data;
+                                if (data.provider_name === 'Twitter') {
+                                    data.html = [
+                                        '<blockquote class="twitter-tweet" data-partner="tweetdeck">',
+                                        '    <p>',
+                                        data.description,
+                                        '   </p>&mdash; ',
+                                        '   '+data.title+' (@'+data.author_name+')',
+                                        '   <a href="'+data.url+'">'+data.url+'</a>',
+                                        '</blockquote>'
+                                    ].join('\n');
+                                }
+                                deferred.resolve(data);
+                            },
+                            function errorCallback(error) {
+                                deferred.reject(error.error_message || error.data.error_message);
+                            }
+                        );
+                    }
+                    function validTweetUrl(url) {
+                        return (
+                            url.indexOf('twitter') !== -1 &&
+                            url.indexOf('status') !== -1);
+                    }
                     // wait for the providers list
                     noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
+                        if (validTweetUrl(url)) {
+                            useTwitterHandler();
+                        }
                         // if the url is in the NoEmbed providers list, we use NoEmbed
-                        if (isSupportedByNoEmbedProviders(providers, url)) {
+                        else if (isSupportedByNoEmbedProviders(providers, url)) {
                             useNoEmbedService();
-                        } else {
-                            // otherwise we use embedly which limits requests
+                        }
+                        // otherwise we use embedly which limits requests
+                        else {
                             useEmbedlyService();
                         }
                     }, function noEmbedProvidersErrorCallback(error) {
