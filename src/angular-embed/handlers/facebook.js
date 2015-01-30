@@ -1,6 +1,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Add a width parameter to the facebook embed
+    */
     function facebookService(embedlyService, $q) {
         return {
             name: 'Facebook',

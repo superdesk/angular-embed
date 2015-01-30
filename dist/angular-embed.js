@@ -34,6 +34,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Add a width parameter to the facebook embed
+    */
     function facebookService(embedlyService, $q) {
         return {
             name: 'Facebook',
@@ -65,6 +68,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Construct a custom <blockquote> element from embed.ly's response metadata
+    */
     function twitterService(embedlyService, $q) {
         return {
             name: 'Twitter',
@@ -105,6 +111,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Use embed.ly for youtube
+    */
     function youtubeService(embedlyService, $q) {
         return {
             name: 'Youtube',

@@ -1,6 +1,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Construct a custom <blockquote> element from embed.ly's response metadata
+    */
     function twitterService(embedlyService, $q) {
         return {
             name: 'Twitter',

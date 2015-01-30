@@ -1,6 +1,9 @@
 (function () {
     'use strict';
 
+    /**
+    * Use embed.ly for youtube
+    */
     function youtubeService(embedlyService, $q) {
         return {
             name: 'Youtube',
