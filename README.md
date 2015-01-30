@@ -19,6 +19,8 @@ _Embed.ly_ limits the amount of requests and requires an API key so __you need t
 <script src="bower/angular-embed/dist/angular-embed.min.js"></script>
 ```
 
+- And add them in your angular application
+
 ```js
     angular.module('myApp', [
         // set `angular-embed` as a dependency of your module
@@ -31,4 +33,45 @@ _Embed.ly_ limits the amount of requests and requires an API key so __you need t
         // set your embed.ly key
         embedlyServiceProvider.setKey('your key');
     });
+```
+## Special Handlers
+
+**angular-embed** comes with some custom handlers
+
+| Name                    | Description                                                            |
+|:----------------------- |:-----------------------------------------------------------------------|
+| ngEmbedFacebookHandler  | Add a width parameter to the facebook embed code                       |
+| ngEmbedInstagramHandler | Use embed.ly for instagram                                             |
+| ngEmbedTwitterHandler   | Construct a custom &lt;blockquote&gt; element from embed.ly's metadata |
+| ngEmbedYoutubeHandler   | Use embed.ly for youtube                                               |
+
+To use a special handler, register them in the `run` block.
+
+```js
+angular.module('myApp')
+    .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
+        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler) {
+            embedService.registerHandler(ngEmbedFacebookHandler);
+            embedService.registerHandler(ngEmbedTwitterHandler);
+        }
+    ]);
+```
+
+### Custom Handler
+
+You can register all the handlers you want. An handler must match this structure and must return a promise of a [valid oembed code](http://oembed.com/).
+
+```js
+{
+    name: 'Twitter',
+    patterns: [
+        'https?://(?:www|mobile\\.)?twitter\\.com/(?:#!/)?[^/]+/status(?:es)?/(\\d+)/?$',
+        'https?://t\\.co/[a-zA-Z0-9]+'
+    ],
+    embed: function(url, max_width) {
+        var deferred = $q.defer();
+        ...
+        return deferred.promise;
+    }
+}
 ```
