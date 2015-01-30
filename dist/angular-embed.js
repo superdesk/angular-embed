@@ -121,7 +121,7 @@
                                 data.description,
                                 '    </p>&mdash; ',
                                 '    '+data.title+' (@'+data.author_name+')',
-                                '    <a href="'+data.url+'">'+data.url+'</a>',
+                                '    <a href="'+url+'">'+url+'</a>',
                                 '</blockquote>',
                                 '<script>',
                                 '    window.twttr = (function(d, s, id) {',
