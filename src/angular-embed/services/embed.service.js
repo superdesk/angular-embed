@@ -49,7 +49,6 @@
                                 var regex = new RegExp(pattern);
                                 if (regex.test(url)) {
                                     handler.embed(url, max_width).then(function(response) {
-                                        console.log('pouet', response);
                                         deferred.resolve(response);
                                     });
                                     return true;
