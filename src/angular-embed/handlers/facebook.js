@@ -7,13 +7,13 @@
             patterns: [
                 'https?://(www\\.)facebook.com/.*'
             ],
-            embed: function(url) {
+            embed: function(url, max_width) {
                 var deferred = $q.defer();
-                embedlyService.embed(url).then(
+                embedlyService.embed(url, max_width).then(
                     function successCallback(response) {
                         var data = response.data;
-                        if (data.provider_name === 'Facebook') {
-                            data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="400"');
+                        if (data.provider_name === 'Facebook' && (max_width !== undefined)) {
+                            data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="'+max_width+'"');
                         }
                         deferred.resolve(data);
                     },

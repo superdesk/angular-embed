@@ -40,13 +40,13 @@
             patterns: [
                 'https?://(www\\.)facebook.com/.*'
             ],
-            embed: function(url) {
+            embed: function(url, max_width) {
                 var deferred = $q.defer();
-                embedlyService.embed(url).then(
+                embedlyService.embed(url, max_width).then(
                     function successCallback(response) {
                         var data = response.data;
-                        if (data.provider_name === 'Facebook') {
-                            data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="400"');
+                        if (data.provider_name === 'Facebook' && (max_width !== undefined)) {
+                            data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="'+max_width+'"');
                         }
                         deferred.resolve(data);
                     },
@@ -121,12 +121,12 @@
             }
             return {
                 registerHandler: provider.registerHandler,
-                get: function(url) {
+                get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
                     // return the embedly response to the promise
                     function useEmbedlyService() {
-                        embedlyService.embed(url).then(
+                        embedlyService.embed(url, max_width).then(
                             function successCallback(response) {
                                 deferred.resolve(response.data);
                             },
@@ -152,7 +152,7 @@
                             return handler.patterns.some(function(pattern) {
                                 var regex = new RegExp(pattern);
                                 if (regex.test(url)) {
-                                    handler.embed(url).then(function(response) {
+                                    handler.embed(url, max_width).then(function(response) {
                                         deferred.resolve(response);
                                     });
                                     return true;

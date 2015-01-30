@@ -17,12 +17,12 @@
             }
             return {
                 registerHandler: provider.registerHandler,
-                get: function(url) {
+                get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
                     // return the embedly response to the promise
                     function useEmbedlyService() {
-                        embedlyService.embed(url).then(
+                        embedlyService.embed(url, max_width).then(
                             function successCallback(response) {
                                 deferred.resolve(response.data);
                             },
@@ -48,7 +48,7 @@
                             return handler.patterns.some(function(pattern) {
                                 var regex = new RegExp(pattern);
                                 if (regex.test(url)) {
-                                    handler.embed(url).then(function(response) {
+                                    handler.embed(url, max_width).then(function(response) {
                                         deferred.resolve(response);
                                     });
                                     return true;
