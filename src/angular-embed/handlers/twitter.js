@@ -18,13 +18,22 @@
                         var data = response.data;
                         if (data.provider_name === 'Twitter') {
                             data.html = [
-                                '<blockquote class="twitter-tweet" data-partner="tweetdeck">',
+                                '<blockquote class="twitter-tweet">',
                                 '    <p>',
                                 data.description,
-                                '   </p>&mdash; ',
-                                '   '+data.title+' (@'+data.author_name+')',
-                                '   <a href="'+data.url+'">'+data.url+'</a>',
-                                '</blockquote>'
+                                '    </p>&mdash; ',
+                                '    '+data.title+' (@'+data.author_name+')',
+                                '    <a href="'+data.url+'">'+data.url+'</a>',
+                                '</blockquote>',
+                                '<script>',
+                                '    window.twttr = (function(d, s, id) {',
+                                '        var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};',
+                                '        if (d.getElementById(id)) return t; js = d.createElement(s);js.id = id;',
+                                '        js.src = "https://platform.twitter.com/widgets.js";',
+                                '        fjs.parentNode.insertBefore(js, fjs); t._e = [];',
+                                '        t.ready = function(f) {t._e.push(f);}; return t;}(document, "script", "twitter-wjs"));',
+                                '    window.twttr.ready(function(){window.twttr.widgets.load();});',
+                                '</script>'
                             ].join('\n');
                         }
                         deferred.resolve(data);
