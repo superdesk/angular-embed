@@ -48,7 +48,7 @@
                 embedlyService.embed(url, max_width).then(
                     function successCallback(response) {
                         var data = response.data;
-                        if (data.provider_name === 'Facebook' && (max_width !== undefined)) {
+                        if (data.provider_name === 'Facebook' && data.html && (max_width !== undefined)) {
                             data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="'+max_width+'"');
                         }
                         deferred.resolve(data);
