@@ -1,6 +1,6 @@
 {
   "name": "angular-embed",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description" : "Retrieve an embed code for the given url using NoEmbed or Embedly",
   "authors": [
     {
