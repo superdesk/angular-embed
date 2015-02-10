@@ -17,6 +17,8 @@
             }
             return {
                 registerHandler: provider.registerHandler,
+                setConfig: provider.setConfig,
+                getConfig: provider.getConfig,
                 get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
@@ -27,7 +29,8 @@
                                 deferred.resolve(response.data);
                             },
                             function errorCallback(error) {
-                                deferred.reject(error.error_message || error.data.error_message);
+                                var message = error.error_message || (error.data)? error.data.error_message : undefined;
+                                deferred.reject(message);
                             }
                         );
                     }
@@ -79,12 +82,20 @@
             };
         }
         // register the service in the provider and inject dependencies
-        this.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
+        provider.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
         // list of specialHandler
-        this.specialHandlers = [];
+        provider.specialHandlers = [];
         // method to register specialHandlers
-        this.registerHandler = function(handler) {
+        provider.registerHandler = function(handler) {
             provider.specialHandlers.push(handler);
+        };
+        // configuration
+        provider.config = {};
+        provider.setConfig = function(key, value) {
+            provider.config[key] = value;
+        };
+        provider.getConfig = function(key) {
+            return provider.config[key];
         };
     }
 

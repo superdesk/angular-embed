@@ -15,21 +15,11 @@
     // and are loaded in the correct order to satisfy dependency injection
     // before all nested files are concatenated by Gulp
 
-    // Config
-    angular.module('angular-embed.config', [])
-        .value('angular-embed.config', {
-            debug: true
-        });
-
     // Modules
     angular.module('noEmbed', ['ngResource']);
     angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
-    angular.module('angular-embed-handlers', ['angular-embedly']);
-    angular.module('angular-embed',
-        [
-            'angular-embed.config',
-            'angular-embed.services'
-        ]);
+    angular.module('angular-embed.handlers', ['angular-embed']);
+    angular.module('angular-embed', ['angular-embed.services']);
 })();
 (function () {
     'use strict';
@@ -37,7 +27,7 @@
     /**
     * Add a width parameter to the facebook embed code
     */
-    function facebookService(embedlyService, $q) {
+    function facebookService(embedlyService, $q, embedService) {
         return {
             name: 'Facebook',
             patterns: [
@@ -47,9 +37,33 @@
                 var deferred = $q.defer();
                 embedlyService.embed(url, max_width).then(
                     function successCallback(response) {
+                        var unique_id = '_' + Math.random().toString(36).substr(2, 9);
                         var data = response.data;
                         if (data.provider_name === 'Facebook' && data.html && (max_width !== undefined)) {
-                            data.html = data.html.replace('class="fb-post"', 'class="fb-post" data-width="'+max_width+'"');
+                            data.html = data.html.replace(
+                                'class="fb-post"',
+                                'class="fb-post" data-width="'+max_width+'"'
+                            );
+                            // remove fb-root
+                            data.html = data.html.replace('<div id="fb-root"></div>', '');
+                            // wrapper with id
+                            data.html = data.html.replace('</script>', '</script><div id="'+ unique_id +'">');
+                            data.html += '</div>';
+                            // reload script
+                            data.html += [
+                                '<script>',
+                                '  if(window.FB !== undefined) {',
+                                '    window.FB.XFBML.parse(document.getElementById("'+unique_id+'"));',
+                                '  }',
+                                '</script>'
+                            ].join('');
+                            // add the facebook key
+                            if (embedService.getConfig('facebook_key') !== undefined) {
+                                data.html = data.html.replace(
+                                    'js#xfbml=1',
+                                    'js#xfbml=1&status=0&appId=' + embedService.getConfig('facebook_key')
+                                );
+                            }
                         }
                         deferred.resolve(data);
                     },
@@ -61,8 +75,8 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
-        .service('ngEmbedFacebookHandler', ['embedlyService', '$q', facebookService]);
+    angular.module('angular-embed.handlers')
+        .service('ngEmbedFacebookHandler', ['embedlyService', '$q', 'embedService', facebookService]);
 })();
 
 (function () {
@@ -92,7 +106,7 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedInstagramHandler', ['embedlyService', '$q', instagramService]);
 })();
 
@@ -127,7 +141,7 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedPictureHandler', ['embedlyService', '$q', pictureService]);
 })();
 
@@ -148,16 +162,19 @@
                 var deferred = $q.defer();
                 embedlyService.embed(url).then(
                     function successCallback(response) {
+                        var unique_id = '_' + Math.random().toString(36).substr(2, 9);
                         var data = response.data;
                         if (data.provider_name === 'Twitter') {
                             data.html = [
-                                '<blockquote class="twitter-tweet">',
-                                '    <p>',
+                                '<div id="'+ unique_id +'">',
+                                '     <blockquote class="twitter-tweet">',
+                                '         <p>',
                                 data.description,
-                                '    </p>&mdash; ',
-                                '    '+data.title+' (@'+data.author_name+')',
-                                '    <a href="'+url+'">'+url+'</a>',
-                                '</blockquote>',
+                                '         </p>&mdash; ',
+                                '         '+data.title+' (@'+data.author_name+')',
+                                '         <a href="'+url+'">'+url+'</a>',
+                                '     </blockquote>',
+                                '</div>',
                                 '<script>',
                                 '    window.twttr = (function(d, s, id) {',
                                 '        var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};',
@@ -165,7 +182,9 @@
                                 '        js.src = "https://platform.twitter.com/widgets.js";',
                                 '        fjs.parentNode.insertBefore(js, fjs); t._e = [];',
                                 '        t.ready = function(f) {t._e.push(f);}; return t;}(document, "script", "twitter-wjs"));',
-                                '    window.twttr.ready(function(){window.twttr.widgets.load();});',
+                                '    window.twttr.ready(function(){',
+                                '        window.twttr.widgets.load(document.getElementById("'+ unique_id +'"));',
+                                '    });',
                                 '</script>'
                             ].join('\n');
                         }
@@ -179,7 +198,7 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedTwitterHandler', ['embedlyService', '$q', twitterService]);
 })();
 
@@ -211,7 +230,7 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedYoutubeHandler', ['embedlyService', '$q', youtubeService]);
 })();
 
@@ -234,6 +253,8 @@
             }
             return {
                 registerHandler: provider.registerHandler,
+                setConfig: provider.setConfig,
+                getConfig: provider.getConfig,
                 get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
@@ -244,7 +265,8 @@
                                 deferred.resolve(response.data);
                             },
                             function errorCallback(error) {
-                                deferred.reject(error.error_message || error.data.error_message);
+                                var message = error.error_message || (error.data)? error.data.error_message : undefined;
+                                deferred.reject(message);
                             }
                         );
                     }
@@ -296,12 +318,20 @@
             };
         }
         // register the service in the provider and inject dependencies
-        this.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
+        provider.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
         // list of specialHandler
-        this.specialHandlers = [];
+        provider.specialHandlers = [];
         // method to register specialHandlers
-        this.registerHandler = function(handler) {
+        provider.registerHandler = function(handler) {
             provider.specialHandlers.push(handler);
+        };
+        // configuration
+        provider.config = {};
+        provider.setConfig = function(key, value) {
+            provider.config[key] = value;
+        };
+        provider.getConfig = function(key) {
+            return provider.config[key];
         };
     }
 

@@ -26,6 +26,6 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedYoutubeHandler', ['embedlyService', '$q', youtubeService]);
 })();

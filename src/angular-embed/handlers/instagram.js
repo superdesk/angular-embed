@@ -25,6 +25,6 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedInstagramHandler', ['embedlyService', '$q', instagramService]);
 })();

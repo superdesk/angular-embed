@@ -17,10 +17,6 @@ describe('', function() {
         dependencies = module.requires;
     });
 
-    it('should load config module', function() {
-        expect(hasModule('angular-embed.config')).to.be.ok;
-    });
-
     it('should load services module', function() {
         expect(hasModule('angular-embed.services')).to.be.ok;
     });

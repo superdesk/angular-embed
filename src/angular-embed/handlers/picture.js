@@ -29,6 +29,6 @@
             }
         };
     }
-    angular.module('angular-embed-handlers')
+    angular.module('angular-embed.handlers')
         .service('ngEmbedPictureHandler', ['embedlyService', '$q', pictureService]);
 })();
