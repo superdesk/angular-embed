@@ -38,12 +38,12 @@ _Embed.ly_ limits the amount of requests and requires an API key so __you need t
 
 **angular-embed** comes with some custom handlers
 
-| Name                    | Description                                                            |
-|:----------------------- |:-----------------------------------------------------------------------|
-| ngEmbedFacebookHandler  | Add a width parameter to the facebook embed code                       |
-| ngEmbedInstagramHandler | Use embed.ly for instagram                                             |
-| ngEmbedTwitterHandler   | Construct a custom &lt;blockquote&gt; element from embed.ly's metadata |
-| ngEmbedYoutubeHandler   | Use embed.ly for youtube                                               |
+| Name                    | Description                                                                |
+|:----------------------- |:---------------------------------------------------------------------------|
+| ngEmbedFacebookHandler  | Add a width parameter to the facebook embed code and an App id (see below) |
+| ngEmbedInstagramHandler | Use embed.ly for instagram                                                 |
+| ngEmbedTwitterHandler   | Construct a custom &lt;blockquote&gt; element from embed.ly's metadata     |
+| ngEmbedYoutubeHandler   | Use embed.ly for youtube                                                   |
 
 To use a special handler, register them in the `run` block.
 
@@ -52,6 +52,7 @@ angular.module('myApp')
     .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
         function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler) {
             embedService.registerHandler(ngEmbedFacebookHandler);
+            embedService.setConfig('facebook_key', 'xxxxxxxxxxxxxxx');
             embedService.registerHandler(ngEmbedTwitterHandler);
         }
     ]);
