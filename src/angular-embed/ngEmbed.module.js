@@ -18,6 +18,6 @@
     // Modules
     angular.module('noEmbed', ['ngResource']);
     angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
-    angular.module('angular-embed.handlers', ['angular-embed']);
     angular.module('angular-embed', ['angular-embed.services']);
+    angular.module('angular-embed.handlers', ['angular-embed']);
 })();
