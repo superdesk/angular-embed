@@ -58,10 +58,10 @@
                                 '</script>'
                             ].join('');
                             // add the facebook key
-                            if (embedService.getConfig('facebook_key') !== undefined) {
+                            if (embedService.getConfig('facebookAppId') !== undefined) {
                                 data.html = data.html.replace(
                                     'js#xfbml=1',
-                                    'js#xfbml=1&status=0&appId=' + embedService.getConfig('facebook_key')
+                                    'js#xfbml=1&status=0&appId=' + embedService.getConfig('facebookAppId')
                                 );
                             }
                         }

@@ -52,7 +52,7 @@ angular.module('myApp')
     .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
         function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler) {
             embedService.registerHandler(ngEmbedFacebookHandler);
-            embedService.setConfig('facebook_key', 'xxxxxxxxxxxxxxx');
+            embedService.setConfig('facebookAppId', 'xxxxxxxxxxxxxxx');
             embedService.registerHandler(ngEmbedTwitterHandler);
         }
     ]);
