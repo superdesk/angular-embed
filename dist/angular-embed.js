@@ -164,6 +164,7 @@
                     function successCallback(response) {
                         var unique_id = '_' + Math.random().toString(36).substr(2, 9);
                         var data = response.data;
+                        data.element_id = unique_id;
                         if (data.provider_name === 'Twitter') {
                             data.html = [
                                 '<div id="'+ unique_id +'">',
