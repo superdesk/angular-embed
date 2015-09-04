@@ -34,6 +34,14 @@ _Embed.ly_ limits the amount of requests and requires an API key so __you need t
         embedlyServiceProvider.setKey('your key');
     });
 ```
+
+- You can also use the directive instead of using the embedService with one of the following syntaxes
+
+```html
+<ng-embed url="https://www.youtube.com/watch?v=Ksd-a9lIIDc"></ng-embed>
+<div ng-embed="https://www.youtube.com/watch?v=Ksd-a9lIIDc"></div>
+<div class="ng-embed:https://www.youtube.com/watch?v=Ksd-a9lIIDc;"></div>
+```
 ## Special Handlers
 
 **angular-embed** comes with some custom handlers
