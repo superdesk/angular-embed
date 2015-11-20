@@ -64,7 +64,8 @@
                         // wait for the providers list
                         noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
                             // if the url is in the NoEmbed providers list, we use NoEmbed
-                            if (isSupportedByNoEmbedProviders(providers, url)) {
+                            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false) &&
+                            isSupportedByNoEmbedProviders(providers, url)) {
                                 useNoEmbedService();
                             }
                             // otherwise we use embedly which limits requests
@@ -94,8 +95,12 @@
         provider.setConfig = function(key, value) {
             provider.config[key] = value;
         };
-        provider.getConfig = function(key) {
-            return provider.config[key];
+        provider.getConfig = function(key, default_value) {
+            var value = provider.config[key];
+            if(!angular.isDefined(value)) {
+                value = default_value;
+            }
+            return value;
         };
     }
 
