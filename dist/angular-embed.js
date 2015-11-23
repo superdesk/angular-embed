@@ -264,7 +264,10 @@
         var provider = this;
         // Embed Service
         function embedService(embedlyService, noEmbedService, $q) {
-            var noEmbedProviders = noEmbedService.providers();
+            var noEmbedProviders = $q.when();
+            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false)) {
+                noEmbedProviders = noEmbedService.providers();
+            }
             // test the url with all the providers. Return true if the url match a provider
             function isSupportedByNoEmbedProviders(providers, url) {
                 return providers.some(function(provider) {
