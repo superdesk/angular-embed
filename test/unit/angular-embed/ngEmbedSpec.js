@@ -11,14 +11,13 @@ describe('', function() {
     };
 
     beforeEach(function() {
-
         // Get module
         module = angular.module('angular-embed');
         dependencies = module.requires;
     });
 
     it('should load services module', function() {
-        expect(hasModule('angular-embed.services')).to.be.ok;
+        expect(hasModule('angular-embed.services')).to.equal(true);
     });
 
 });

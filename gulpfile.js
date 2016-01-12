@@ -1,3 +1,4 @@
+'use strict';
 var gulp = require('gulp');
 var karma = require('karma').server;
 var concat = require('gulp-concat');
@@ -17,6 +18,7 @@ var rootDirectory = path.resolve('./');
 
 // Source directory for build process
 var sourceDirectory = path.join(rootDirectory, './src');
+var testsDirectory = path.join(rootDirectory, './test');
 
 var sourceFiles = [
 
@@ -27,6 +29,10 @@ var sourceFiles = [
   path.join(sourceDirectory, '/**/*.js')
 ];
 
+var testsFiles = [
+  path.join(testsDirectory, '/**/*.js')
+];
+
 gulp.task('build', function() {
   gulp.src(sourceFiles)
     .pipe(plumber())
@@ -34,23 +40,22 @@ gulp.task('build', function() {
     .pipe(gulp.dest('./dist/'))
     .pipe(uglify())
     .pipe(rename('angular-embed.min.js'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist'));
 });
 
 /**
  * Process
  */
 gulp.task('process-all', function (done) {
-  runSequence('jshint-src', 'test-src', 'build', done)
+  runSequence('jshint-src', 'test-src', 'build', done);
 });
 
 /**
  * Watch task
  */
 gulp.task('watch', function () {
-
   // Watch JavaScript files
-  gulp.watch(sourceFiles, ['process-all']);
+  gulp.watch(sourceFiles.concat(testsFiles), ['process-all']);
 });
 
 /**
@@ -58,11 +63,11 @@ gulp.task('watch', function () {
  */
 
 gulp.task('jshint-src', function () {
-  return gulp.src(sourceFiles)
+  return gulp.src(sourceFiles.concat(testsFiles))
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'))
+    .pipe(jshint.reporter('fail'));
 });
 
 /**
@@ -96,5 +101,5 @@ gulp.task('test-dist-minified', function (done) {
 });
 
 gulp.task('default', function () {
-  runSequence('process-all', 'watch')
+  runSequence('process-all', 'watch');
 });

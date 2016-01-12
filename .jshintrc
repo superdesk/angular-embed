@@ -19,6 +19,7 @@
   "trailing": true,
   "globals": {
     "$": false,
+    "assert": false,
     "_": false,
     "angular": false,
     "define": false,
