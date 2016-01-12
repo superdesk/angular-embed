@@ -4,9 +4,9 @@
     function EmbedServiceProvider() {
         var provider = this;
         // Embed Service
-        function embedService(embedlyService, noEmbedService, $q) {
+        function embedService(embedlyService, noEmbedService, iframelyService, $q) {
             var noEmbedProviders = $q.when();
-            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false)) {
+            if (!provider.getConfig('useOnlyFallback', false)) {
                 noEmbedProviders = noEmbedService.providers();
             }
             // test the url with all the providers. Return true if the url match a provider
@@ -25,7 +25,7 @@
                 get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
-                    // return the embedly response to the promise
+                    // return the embedly response within the promise
                     function useEmbedlyService() {
                         embedlyService.embed(url, max_width).then(
                             function successCallback(response) {
@@ -37,7 +37,7 @@
                             }
                         );
                     }
-                    // return the noEmbed response to the promise
+                    // return the noEmbed response within the promise
                     function useNoEmbedService() {
                         noEmbedService.embed(url).then(function(response) {
                             if (response.error !== undefined) {
@@ -46,6 +46,18 @@
                                 deferred.resolve(response);
                             }
                         });
+                    }
+                    // return the iframely response within the promise
+                    function useIframelyService() {
+                        iframelyService.embed(url).then(
+                            function successCallback(response) {
+                                deferred.resolve(response);
+                            },
+                            function errorCallback(error) {
+                                var message = error.error_message;
+                                deferred.reject(message);
+                            }
+                        );
                     }
                     // if the url isn't supported by a specialHandler
                     if (
@@ -67,13 +79,17 @@
                         // wait for the providers list
                         noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
                             // if the url is in the NoEmbed providers list, we use NoEmbed
-                            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false) &&
+                            if (!provider.getConfig('useOnlyFallback', false) &&
                             isSupportedByNoEmbedProviders(providers, url)) {
                                 useNoEmbedService();
                             }
                             // otherwise we use embedly which limits requests
                             else {
-                                useEmbedlyService();
+                                var FALLBACK_SERVICES = {
+                                    embedly: useEmbedlyService,
+                                    iframely: useIframelyService
+                                };
+                                FALLBACK_SERVICES[provider.getConfig('fallbackService', 'embedly')]();
                             }
                         }, function noEmbedProvidersErrorCallback(error) {
                             // on NoembedProviders error, use the embedly service
@@ -86,7 +102,7 @@
             };
         }
         // register the service in the provider and inject dependencies
-        provider.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
+        provider.$get = ['embedlyService', 'noEmbedService', 'iframelyService', '$q', embedService];
         // list of specialHandler
         provider.specialHandlers = [];
         // method to register specialHandlers

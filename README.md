@@ -63,7 +63,7 @@ angular.module('myApp')
             embedService.setConfig('facebookAppId', 'xxxxxxxxxxxxxxx');
             embedService.registerHandler(ngEmbedTwitterHandler);
             // optional: if true, prevent to use noembed as first choice (default: false)
-            embedService.setConfig('allwaysUseEmbedlyByDefault', true);
+            embedService.setConfig('useOnlyFallback', true);
         }
     ]);
 ```

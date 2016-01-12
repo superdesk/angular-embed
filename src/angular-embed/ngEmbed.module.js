@@ -7,7 +7,7 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
- 
+
 (function () {
     'use strict';
 
@@ -17,7 +17,8 @@
 
     // Modules
     angular.module('noEmbed', ['ngResource']);
-    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
+    angular.module('iframely', ['ngResource']);
+    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed', 'iframely']);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
 })();

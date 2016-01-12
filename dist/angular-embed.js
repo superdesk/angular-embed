@@ -7,7 +7,7 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
- 
+
 (function () {
     'use strict';
 
@@ -17,10 +17,12 @@
 
     // Modules
     angular.module('noEmbed', ['ngResource']);
-    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed']);
+    angular.module('iframely', ['ngResource']);
+    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed', 'iframely']);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
 })();
+
 (function(){
   'use strict';
   
@@ -263,9 +265,9 @@
     function EmbedServiceProvider() {
         var provider = this;
         // Embed Service
-        function embedService(embedlyService, noEmbedService, $q) {
+        function embedService(embedlyService, noEmbedService, iframelyService, $q) {
             var noEmbedProviders = $q.when();
-            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false)) {
+            if (!provider.getConfig('useOnlyFallback', false)) {
                 noEmbedProviders = noEmbedService.providers();
             }
             // test the url with all the providers. Return true if the url match a provider
@@ -284,7 +286,7 @@
                 get: function(url, max_width) {
                     // prepare a promise to be returned quickly
                     var deferred = $q.defer();
-                    // return the embedly response to the promise
+                    // return the embedly response within the promise
                     function useEmbedlyService() {
                         embedlyService.embed(url, max_width).then(
                             function successCallback(response) {
@@ -296,7 +298,7 @@
                             }
                         );
                     }
-                    // return the noEmbed response to the promise
+                    // return the noEmbed response within the promise
                     function useNoEmbedService() {
                         noEmbedService.embed(url).then(function(response) {
                             if (response.error !== undefined) {
@@ -305,6 +307,18 @@
                                 deferred.resolve(response);
                             }
                         });
+                    }
+                    // return the iframely response within the promise
+                    function useIframelyService() {
+                        iframelyService.embed(url).then(
+                            function successCallback(response) {
+                                deferred.resolve(response);
+                            },
+                            function errorCallback(error) {
+                                var message = error.error_message;
+                                deferred.reject(message);
+                            }
+                        );
                     }
                     // if the url isn't supported by a specialHandler
                     if (
@@ -326,13 +340,17 @@
                         // wait for the providers list
                         noEmbedProviders.then(function noEmbedProvidersSuccessCallback(providers) {
                             // if the url is in the NoEmbed providers list, we use NoEmbed
-                            if (!provider.getConfig('allwaysUseEmbedlyByDefault', false) &&
+                            if (!provider.getConfig('useOnlyFallback', false) &&
                             isSupportedByNoEmbedProviders(providers, url)) {
                                 useNoEmbedService();
                             }
                             // otherwise we use embedly which limits requests
                             else {
-                                useEmbedlyService();
+                                var FALLBACK_SERVICES = {
+                                    embedly: useEmbedlyService,
+                                    iframely: useIframelyService
+                                };
+                                FALLBACK_SERVICES[provider.getConfig('fallbackService', 'embedly')]();
                             }
                         }, function noEmbedProvidersErrorCallback(error) {
                             // on NoembedProviders error, use the embedly service
@@ -345,7 +363,7 @@
             };
         }
         // register the service in the provider and inject dependencies
-        provider.$get = ['embedlyService', 'noEmbedService', '$q', embedService];
+        provider.$get = ['embedlyService', 'noEmbedService', 'iframelyService', '$q', embedService];
         // list of specialHandler
         provider.specialHandlers = [];
         // method to register specialHandlers
@@ -368,6 +386,44 @@
 
     angular.module('angular-embed.services')
         .provider('embedService', EmbedServiceProvider);
+})();
+
+(function () {
+    'use strict';
+    function IframelyProvider() {
+        var provider = this;
+        // register the service in the provider and inject dependencies
+        function iframelyService($resource) {
+            return {
+                embed: function(url) {
+                    var api_key = provider.getKey();
+                    var resource = $resource('https://iframe.ly/api/iframely?callback=JSON_CALLBACK&api_key='+api_key+'&url='+url,
+                    {},
+                    {
+                        get: {
+                            method: 'JSONP'
+                        }
+                    });
+                    return resource.get().$promise.then(function(data) {
+                        // mimic oembed
+                        data.title = data.meta.title;
+                        data.provider_name = data.meta.site;
+                        return data;
+                    });
+                }
+            };
+        }
+        angular.extend(provider, {
+            $get: ['$resource', iframelyService],
+            setKey: function(key) {
+                provider.key = key;
+            },
+            getKey: function() {
+                return provider.key;
+            }
+        });
+    }
+    angular.module('iframely').provider('iframelyService', IframelyProvider);
 })();
 
 (function () {

@@ -31,7 +31,8 @@ describe('angular-embed', function() {
         embedService = _embedService_;
         httpBackend.when('JSONP', 'https://noembed.com/providers?callback=JSON_CALLBACK').respond(providers);
         httpBackend.when('JSONP', 'https://noembed.com/embed?callback=JSON_CALLBACK&url='+youtube_url).respond(youtube_response);
-        httpBackend.when('GET', 'https://api.embed.ly/1/oembed?key=undefined&url='+randomsite_url).respond(randomsite_response);
+        httpBackend.when('GET', 'https://api.embed.ly/1/oembed?key=undefined&url='+encodeURIComponent(randomsite_url))
+        .respond(randomsite_response);
     }));
 
     afterEach(function() {
