@@ -18,7 +18,12 @@
     // Modules
     angular.module('noEmbed', ['ngResource']);
     angular.module('iframely', ['ngResource']);
-    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed', 'iframely']);
+    var services = ['noEmbed', 'iframely'];
+    try {
+        angular.module('angular-embedly');
+        services.push('angular-embedly');
+    } catch (e) {}
+    angular.module('angular-embed.services', services);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
 })();

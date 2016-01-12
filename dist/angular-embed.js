@@ -18,7 +18,12 @@
     // Modules
     angular.module('noEmbed', ['ngResource']);
     angular.module('iframely', ['ngResource']);
-    angular.module('angular-embed.services', ['angular-embedly', 'noEmbed', 'iframely']);
+    var services = ['noEmbed', 'iframely'];
+    try {
+        angular.module('angular-embedly');
+        services.push('angular-embedly');
+    } catch (e) {}
+    angular.module('angular-embed.services', services);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
 })();
@@ -265,7 +270,7 @@
     function EmbedServiceProvider() {
         var provider = this;
         // Embed Service
-        function embedService(embedlyService, noEmbedService, iframelyService, $q) {
+        function embedService(noEmbedService, iframelyService, $q, $injector) {
             var noEmbedProviders = $q.when();
             if (!provider.getConfig('useOnlyFallback', false)) {
                 noEmbedProviders = noEmbedService.providers();
@@ -288,6 +293,7 @@
                     var deferred = $q.defer();
                     // return the embedly response within the promise
                     function useEmbedlyService() {
+                        var embedlyService = $injector.get('embedlyService');
                         embedlyService.embed(url, max_width).then(
                             function successCallback(response) {
                                 deferred.resolve(response.data);
@@ -363,7 +369,7 @@
             };
         }
         // register the service in the provider and inject dependencies
-        provider.$get = ['embedlyService', 'noEmbedService', 'iframelyService', '$q', embedService];
+        provider.$get = ['noEmbedService', 'iframelyService', '$q', '$injector', embedService];
         // list of specialHandler
         provider.specialHandlers = [];
         // method to register specialHandlers
