@@ -67,7 +67,7 @@
                             return handler.patterns.some(function(pattern) {
                                 var regex = new RegExp(pattern);
                                 if (regex.test(url)) {
-                                    handler.embed(url, max_width).then(function(response) {
+                                    $q.when(handler.embed(url, max_width)).then(function(response) {
                                         deferred.resolve(response);
                                     });
                                     return true;
