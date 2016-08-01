@@ -1,6 +1,7 @@
 {
   "name": "angular-embed",
   "version": "2.1.1",
+  "main": "./dist/angular-embed.min.js",
   "author": {
     "name": "Edouard Richard",
     "email": "edouard@sourcefabric.org"
