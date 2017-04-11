@@ -26,6 +26,17 @@
     angular.module('angular-embed.services', services);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
+    angular.module('angular-embed')
+        .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+            $sceDelegateProvider.resourceUrlWhitelist([
+                // Allow same origin resource loads.
+                'self',
+                'https://iframe.ly/api/iframely?**',
+                'https://noembed.com/embed?**',
+                'https://noembed.com/providers',
+                'https://api.embed.ly/1/**?**'
+            ]);
+        }]);
 })();
 
 (function(){
@@ -403,7 +414,7 @@
             return {
                 embed: function(url) {
                     var api_key = provider.getKey();
-                    var resource = $resource('https://iframe.ly/api/iframely?callback=JSON_CALLBACK&api_key='+api_key+'&url='+url,
+                    var resource = $resource('https://iframe.ly/api/iframely?api_key='+api_key+'&url='+url,
                     {},
                     {
                         get: {
@@ -438,7 +449,7 @@
     function noEmbedService($resource) {
         return {
             embed: function(url) {
-                var resource = $resource('https://noembed.com/embed?callback=JSON_CALLBACK&url='+url, {},
+                var resource = $resource('https://noembed.com/embed?url='+url, {},
                     {
                         get: {
                             method: 'JSONP'
@@ -451,8 +462,7 @@
                     {
                         query: {
                             method: 'JSONP',
-                            isArray: true,
-                            params: {callback:'JSON_CALLBACK'}
+                            isArray: true
                         }
                     });
                 return resource.query().$promise;
