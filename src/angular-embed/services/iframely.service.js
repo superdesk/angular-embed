@@ -7,7 +7,7 @@
             return {
                 embed: function(url) {
                     var api_key = provider.getKey();
-                    var resource = $resource('https://iframe.ly/api/iframely?callback=JSON_CALLBACK&api_key='+api_key+'&url='+url,
+                    var resource = $resource('https://iframe.ly/api/iframely?api_key='+api_key+'&url='+url,
                     {},
                     {
                         get: {

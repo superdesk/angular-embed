@@ -26,4 +26,15 @@
     angular.module('angular-embed.services', services);
     angular.module('angular-embed', ['angular-embed.services']);
     angular.module('angular-embed.handlers', ['angular-embed']);
+    angular.module('angular-embed')
+        .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+            $sceDelegateProvider.resourceUrlWhitelist([
+                // Allow same origin resource loads.
+                'self',
+                'https://iframe.ly/api/iframely?**',
+                'https://noembed.com/embed?**',
+                'https://noembed.com/providers',
+                'https://api.embed.ly/1/**?**'
+            ]);
+        }]);
 })();

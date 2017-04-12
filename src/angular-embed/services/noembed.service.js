@@ -4,7 +4,7 @@
     function noEmbedService($resource) {
         return {
             embed: function(url) {
-                var resource = $resource('https://noembed.com/embed?callback=JSON_CALLBACK&url='+url, {},
+                var resource = $resource('https://noembed.com/embed?url='+url, {},
                     {
                         get: {
                             method: 'JSONP'
@@ -17,8 +17,7 @@
                     {
                         query: {
                             method: 'JSONP',
-                            isArray: true,
-                            params: {callback:'JSON_CALLBACK'}
+                            isArray: true
                         }
                     });
                 return resource.query().$promise;
