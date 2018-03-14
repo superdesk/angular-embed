@@ -414,13 +414,7 @@
             return {
                 embed: function(url) {
                     var api_key = provider.getKey();
-                    var resource = $resource('https://iframe.ly/api/iframely?api_key='+api_key+'&url='+url,
-                    {},
-                    {
-                        get: {
-                            method: 'JSONP'
-                        }
-                    });
+                    var resource = $resource('https://iframe.ly/api/iframely?api_key='+api_key+'&url='+url);
                     return resource.get().$promise.then(function(data) {
                         // mimic oembed
                         data.title = data.meta.title;
