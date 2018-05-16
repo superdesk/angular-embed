@@ -128,7 +128,7 @@
     function instagramService(embedlyService, $q) {
         return {
             name: 'Instagram',
-            patterns: ['https?://instagr(?:\\.am|am\\.com)/p/.+'],
+            patterns: ['(?:(?:http|https):\/\/)?(?:www.)?(?:instagr(?:\.am|am\.com))\/p\/.+'],
             embed: function(url, max_width) {
                 // use embed.ly for youtube video
                 var deferred = $q.defer();
