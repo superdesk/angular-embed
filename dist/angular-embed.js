@@ -195,7 +195,7 @@
         return {
             name: 'Twitter',
             patterns: [
-                'https?://(?:www|mobile\\.)?twitter\\.com/(?:#!/)?[^/]+/status(?:es)?/(\\d+)/?$',
+                'https?://(?:www|mobile\\.)?twitter\\.com/(?:#!/)?[^/]+/status(?:es)?/(\\d+)/?',
                 'https?://t\\.co/[a-zA-Z0-9]+'
             ],
             embed: function(url) {
