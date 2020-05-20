@@ -159,7 +159,7 @@
     function pictureService(embedlyService, $q) {
         return {
             patterns: [
-                '(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\\.(?:jpg|gif|png))(?:\\?([^#]*))?(?:#(.*))?'
+                '(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\\.(?:jpg|jpeg|gif|png))(?:\\?([^#]*))?(?:#(.*))?'
             ],
             embed: function(url, max_width) {
                 var deferred = $q.defer();
